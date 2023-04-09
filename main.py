@@ -16,14 +16,18 @@ class Bot:
         return self.session.post('https://auth.roblox.com/v2/login').headers['x-csrf-token']
 
     def item_info(self):
-        self.collectible_id = self.session.get(f'https://catalog.roblox.com/v1/catalog/items/{assetId}/details?itemType=Asset').json()['collectibleItemId']
-        item_data = self.session.post(
-            'https://apis.roblox.com/marketplace-items/v1/items/details',
-            json = {"itemIds": [self.collectible_id]}, headers = {'x-csrf-token': self.csrf_token()}
-        ).json()[0]
-        self.product_id = item_data['collectibleProductId']
-        self.asset_price = item_data['price']
-        self.seller_id = item_data['creatorId']
+        try:
+            id_response = self.session.get(f'https://catalog.roblox.com/v1/catalog/items/{assetId}/details?itemType=Asset').json()
+            self.collectible_id = id_response['collectibleItemId']
+            item_data = self.session.post(
+                'https://apis.roblox.com/marketplace-items/v1/items/details',
+                json = {"itemIds": [self.collectible_id]}, headers = {'x-csrf-token': self.csrf_token()}
+            ).json()[0]
+            self.product_id = item_data['collectibleProductId']
+            self.asset_price = item_data['price']
+            self.seller_id = item_data['creatorId']
+        except:
+            print(id_response)
 
     def purchase_item(self):
         sent_requests = success = 0
