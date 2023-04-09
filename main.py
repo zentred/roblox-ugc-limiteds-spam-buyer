@@ -45,6 +45,7 @@ class Bot:
                     'X-CSRF-TOKEN': self.csrf_token()
                 }
             )
+            print(response.text)
             if response.status_code == 200:
                 success += 1
             sent_requests += 1
