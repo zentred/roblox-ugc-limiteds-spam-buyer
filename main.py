@@ -1,4 +1,4 @@
-import requests, uuid, time, json
+import requests, uuid, time, json, threading
 
 with open('config.json') as config:
     config = json.load(config)
@@ -26,7 +26,8 @@ class Bot:
         self.seller_id = item_data['creatorId']
 
     def purchase_item(self):
-        for i in range(amount):
+        sent_requests = 0
+        while 1:
             response = self.session.post(
                 f'https://apis.roblox.com/marketplace-sales/v1/item/{self.collectible_id}/purchase-item',
                 json = {
@@ -44,7 +45,11 @@ class Bot:
                     'X-CSRF-TOKEN': self.csrf_token()
                 }
             )
-            print(response.json())
+            print(response.text)
+            sent_requests += 1
+            if amount == sent_requests: break
+            if sent_requests >= 10: # 10 initial requests, assumes you are not ratelimited just for efficiency
+                time.sleep(7)
         
 a = Bot()
 a.item_info()
