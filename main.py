@@ -26,7 +26,7 @@ class Bot:
         self.seller_id = item_data['creatorId']
 
     def purchase_item(self):
-        sent_requests = 0
+        sent_requests = success = 0
         while 1:
             response = self.session.post(
                 f'https://apis.roblox.com/marketplace-sales/v1/item/{self.collectible_id}/purchase-item',
@@ -45,9 +45,10 @@ class Bot:
                     'X-CSRF-TOKEN': self.csrf_token()
                 }
             )
-            print(response.text)
+            if response.status_code == 200:
+                success += 1
             sent_requests += 1
-            if amount == sent_requests: break
+            if amount == success: break
             if sent_requests >= 10: # 10 initial requests, assumes you are not ratelimited just for efficiency
                 time.sleep(7)
         
